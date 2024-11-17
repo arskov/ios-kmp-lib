@@ -1,6 +1,6 @@
 package io.github.arskov
 
-class InMemoryStorageProvider : StoreProvider {
+class InMemoryStoreProvider : StoreProvider {
     private val internalStore = mutableMapOf<Long, PlainData>()
 
     @Throws(StoreException::class)

@@ -9,7 +9,7 @@ class MultiplatformServiceTest {
     @Test
     fun serviceTest() {
         val cryptoProvider = XorCryptoProvider()
-        val storeProvider = InMemoryStorageProvider()
+        val storeProvider = InMemoryStoreProvider()
         val service =
             MultiplatformService(cryptoProvider = cryptoProvider, storeProvider = storeProvider)
 
