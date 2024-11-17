@@ -115,6 +115,7 @@ fabric.properties
 hs_err_pid*
 replay_pid*
 
+.kotlin
 ### Kotlin ###
 # Compiled class file
 
