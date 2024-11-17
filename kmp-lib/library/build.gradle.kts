@@ -13,7 +13,6 @@ version = "1.0.0"
 val iosXCFrameworkName = "KmpLib"
 val binaryName = "kmp-lib"
 
-
 kotlin {
 
     androidTarget {
@@ -28,7 +27,7 @@ kotlin {
     val iosTargets = listOf(iosX64(), iosArm64(), iosSimulatorArm64())
     iosTargets.forEach {
         it.binaries.framework {
-            baseName = binaryName
+            baseName = iosXCFrameworkName
             xcf.add(this)
         }
     }
