@@ -22,7 +22,19 @@ extension KotlinByteArray {
 }
 
 extension String {
-    func toKotlinByteArray() -> KotlinByteArray {
+
+    func toKotlinByteArrayDataPtrCopy() -> KotlinByteArray {
+        var data = Array(self.utf8)
+        let size = Int32(data.count)
+        return data.withUnsafeMutableBytes {
+            ptr -> KotlinByteArray in
+            let addr = ptr.baseAddress
+            return ByteArrayUtilKt.byteArrayFromPtrCopy(
+                data: addr!, size: size)
+        }
+    }
+
+    func toKotlinByteArrayLoopCopy() -> KotlinByteArray {
         // Convert String to [UInt8]
         let utf8Bytes = Array(self.utf8)
         let kotlinByteArray = KotlinByteArray(size: Int32(utf8Bytes.count))
@@ -32,6 +44,28 @@ extension String {
                 index: Int32(index), value: Int8(bitPattern: byte))
         }
         return kotlinByteArray
+    }
+
+    func toKotlinByteArrayUtf8CStringCopy() -> KotlinByteArray {
+        var data = self.utf8CString
+        return data.withUnsafeMutableBufferPointer {
+            ptr -> KotlinByteArray in
+            let addr = ptr.baseAddress!
+            let len = strlen(addr)
+            return ByteArrayUtilKt.byteArrayFromPtrCopy(
+                data: addr, size: Int32(len))
+        }
+    }
+
+    func toKotlinByteArrayUtf8CStringMemcpy() -> KotlinByteArray {
+        var data = self.utf8CString
+        return data.withUnsafeMutableBufferPointer {
+            ptr -> KotlinByteArray in
+            let addr = ptr.baseAddress!
+            let len = strlen(addr)
+            return ByteArrayUtilKt.byteArrayFromPtrMemcpy(
+                data: addr, size: Int32(len))
+        }
     }
 
     func fromHexToKotlinByteArray() -> KotlinByteArray {

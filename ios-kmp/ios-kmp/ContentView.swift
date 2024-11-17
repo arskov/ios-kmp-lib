@@ -34,12 +34,12 @@ struct ContentView: View {
                     id: 1,
                     encrypted: false,
                     updated: 0,
-                    content: self.plainDataText.toKotlinByteArray()
+                    content: self.plainDataText.toKotlinByteArrayUtf8CStringMemcpy()
                 )
                 do {
                     try service.storeData(
                         data: plainData,
-                        encryptionKey: encryptionKey.toKotlinByteArray())
+                        encryptionKey: encryptionKey.toKotlinByteArrayUtf8CStringMemcpy())
                     let storedData = try store.load(id: 1)
                     self.encryptedDataText = storedData.content.toHexString()
 
@@ -64,7 +64,7 @@ struct ContentView: View {
                     .getMultiplatformService()
                 do {
                     let loadedData = try service.loadData(
-                        id: 1, encryptionKey: encryptionKey.toKotlinByteArray())
+                        id: 1, encryptionKey: encryptionKey.toKotlinByteArrayUtf8CStringMemcpy())
                     self.loadedDataText = loadedData.content.toString()
                 } catch {
                     print("error: \(error)")
