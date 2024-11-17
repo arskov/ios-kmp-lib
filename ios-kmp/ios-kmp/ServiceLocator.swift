@@ -26,7 +26,7 @@ class ServiceLocator {
     func getMultiplatformService() -> MultiplatformService {
         return self.mutliplatformService
     }
-    
+
     func getStoreProvider() -> StoreProvider {
         return self.storeProvider
     }
