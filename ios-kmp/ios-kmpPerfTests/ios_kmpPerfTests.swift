@@ -12,39 +12,47 @@ import XCTest
 
 final class ios_kmpPerfTests: XCTestCase {
 
-    override func setUpWithError() throws {
-        // Put setup code here. This method is called before the invocation of each test method in the class.
+    let testString = String(repeating: "Hello, Kotlin! ", count: 1000)
+
+    func measureExecutionTime(_ block: () -> Void) -> TimeInterval {
+        let startTime = CFAbsoluteTimeGetCurrent()
+        block()
+        return CFAbsoluteTimeGetCurrent() - startTime
     }
 
-    override func tearDownWithError() throws {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
-    }
+    func testBenchmarkAllMethods() {
+        let iterations = 1000
+        var results: [String: TimeInterval] = [:]
 
-    func testPerformanceToKotlinByteArrayDataPtrCopy() {
-        let testString = String(repeating: "Hello, Kotlin!", count: 1000)
-        self.measure {
-            _ = testString.toKotlinByteArrayDataPtrCopy()
+        let methods = [
+            "LoopCopy": { _ = self.testString.toKotlinByteArrayLoopCopy() },
+            "DataPtrReadBytes": {
+                _ = self.testString.toKotlinByteArrayDataPtrReadBytes()
+            },
+            "DataPtrMemcpy": {
+                _ = self.testString.toKotlinByteArrayDataPtrMemcpy()
+            },
+            "Utf8CStringReadBytes": {
+                _ = self.testString.toKotlinByteArrayUtf8CStringReadBytes()
+            },
+            "Utf8CStringMemcpy": {
+                _ = self.testString.toKotlinByteArrayUtf8CStringMemcpy()
+            },
+        ]
+
+        for (methodName, method) in methods {
+            var totalTime: TimeInterval = 0
+            for _ in 0..<iterations {
+                totalTime += measureExecutionTime { method() }
+            }
+            results[methodName] = totalTime / Double(iterations)
         }
-    }
 
-    func testPerformanceToKotlinByteArrayLoopCopy() {
-        let testString = String(repeating: "Hello, Kotlin!", count: 1000)
-        self.measure {
-            _ = testString.toKotlinByteArrayLoopCopy()
-        }
-    }
-
-    func testPerformanceToKotlinByteArrayUtf8CStringCopy() {
-        let testString = String(repeating: "Hello, Kotlin!", count: 1000)
-        self.measure {
-            _ = testString.toKotlinByteArrayUtf8CStringCopy()
-        }
-    }
-
-    func testPerformanceToKotlinByteArrayUtf8CStringMemcpy() {
-        let testString = String(repeating: "Hello, Kotlin!", count: 1000)
-        self.measure {
-            _ = testString.toKotlinByteArrayUtf8CStringMemcpy()
+        // Print Results
+        print("Benchmark Results (average over \(iterations) iterations):")
+        for (methodName, averageTime) in results {
+            let formattedTime = String(format: "%.9f", averageTime * 1000)  // Convert seconds to milliseconds
+            print("\(methodName): \(formattedTime) ms")
         }
     }
 }

@@ -10,7 +10,7 @@ import kotlinx.cinterop.usePinned
 import platform.posix.memcpy
 
 @OptIn(ExperimentalForeignApi::class)
-fun byteArrayFromPtrCopy(data: CPointer<ByteVar>, size: Int): ByteArray =
+fun byteArrayFromPtrReadBytes(data: CPointer<ByteVar>, size: Int): ByteArray =
     data.readBytes(size)
 
 @OptIn(ExperimentalForeignApi::class)

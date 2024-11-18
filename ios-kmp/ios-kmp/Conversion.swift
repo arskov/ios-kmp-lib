@@ -23,22 +23,9 @@ extension KotlinByteArray {
 
 extension String {
 
-    func toKotlinByteArrayDataPtrCopy() -> KotlinByteArray {
-        var data = Array(self.utf8)
-        let size = Int32(data.count)
-        return data.withUnsafeMutableBytes {
-            ptr -> KotlinByteArray in
-            let addr = ptr.baseAddress
-            return ByteArrayUtilKt.byteArrayFromPtrCopy(
-                data: addr!, size: size)
-        }
-    }
-
     func toKotlinByteArrayLoopCopy() -> KotlinByteArray {
-        // Convert String to [UInt8]
         let utf8Bytes = Array(self.utf8)
         let kotlinByteArray = KotlinByteArray(size: Int32(utf8Bytes.count))
-        // Populate the KotlinByteArray with the UTF-8 bytes
         for (index, byte) in utf8Bytes.enumerated() {
             kotlinByteArray.set(
                 index: Int32(index), value: Int8(bitPattern: byte))
@@ -46,13 +33,35 @@ extension String {
         return kotlinByteArray
     }
 
-    func toKotlinByteArrayUtf8CStringCopy() -> KotlinByteArray {
+    func toKotlinByteArrayDataPtrReadBytes() -> KotlinByteArray {
+        var data = Array(self.utf8)
+        let size = Int32(data.count)
+        return data.withUnsafeMutableBytes {
+            ptr -> KotlinByteArray in
+            let addr = ptr.baseAddress!
+            return ByteArrayUtilKt.byteArrayFromPtrReadBytes(
+                data: addr, size: size)
+        }
+    }
+
+    func toKotlinByteArrayDataPtrMemcpy() -> KotlinByteArray {
+        var data = Array(self.utf8)
+        let size = Int32(data.count)
+        return data.withUnsafeMutableBytes {
+            ptr -> KotlinByteArray in
+            let addr = ptr.baseAddress!
+            return ByteArrayUtilKt.byteArrayFromPtrMemcpy(
+                data: addr, size: size)
+        }
+    }
+
+    func toKotlinByteArrayUtf8CStringReadBytes() -> KotlinByteArray {
         var data = self.utf8CString
         return data.withUnsafeMutableBufferPointer {
             ptr -> KotlinByteArray in
             let addr = ptr.baseAddress!
             let len = strlen(addr)
-            return ByteArrayUtilKt.byteArrayFromPtrCopy(
+            return ByteArrayUtilKt.byteArrayFromPtrReadBytes(
                 data: addr, size: Int32(len))
         }
     }
